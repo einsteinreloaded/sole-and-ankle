@@ -1,10 +1,14 @@
-import React from 'react';
-import styled from 'styled-components/macro';
+import React from "react";
+import styled from "styled-components/macro";
 
-import { COLORS, WEIGHTS } from '../../constants';
-import { formatPrice, pluralize, isNewShoe } from '../../utils';
-import Spacer from '../Spacer';
+import { COLORS, WEIGHTS } from "../../constants";
+import { formatPrice, pluralize, isNewShoe } from "../../utils";
+import Spacer from "../Spacer";
 
+const variantLabels = {
+  "on-sale": "Sale",
+  "new-release": "Just released!",
+};
 const ShoeCard = ({
   slug,
   name,
@@ -40,31 +44,58 @@ const ShoeCard = ({
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price variantType={variant}>{formatPrice(price)}</Price>
         </Row>
         <Row>
-          <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          <ColorInfo>{pluralize("Color", numOfColors)}</ColorInfo>
+          {variant !== "default" && (
+            <SalePrice>{formatPrice(salePrice)}</SalePrice>
+          )}
         </Row>
       </Wrapper>
+      {variant !== "default" && (
+        <VariantWrapper variantType={variant}>
+          {variantLabels[variant]}
+        </VariantWrapper>
+      )}
     </Link>
   );
 };
 
+const VariantWrapper = styled.div`
+  position: absolute;
+  padding: 7px 9px 9px 11px;
+  right: -4px;
+  top: 12px;
+  background-color: ${(p) =>
+    p.variantType === "on-sale" ? "#C5295D" : "#6868D9"};
+`;
+
 const Link = styled.a`
   text-decoration: none;
   color: inherit;
+  flex: 1 0 340px;
+  max-width: 340px;
+  position: relative;
 `;
 
-const Wrapper = styled.article``;
+const Wrapper = styled.article`
+  display: flex;
+  flex-direction: column;
+`;
 
 const ImageWrapper = styled.div`
   position: relative;
 `;
 
-const Image = styled.img``;
+const Image = styled.img`
+  width: 100%;
+`;
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Name = styled.h3`
@@ -72,7 +103,11 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  color: ${(p) => p.variantType === "on-sale" && COLORS.gray[700]};
+  text-decoration: ${(p) =>
+    p.variantType === "on-sale" ? "line-through" : "initial"};
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
